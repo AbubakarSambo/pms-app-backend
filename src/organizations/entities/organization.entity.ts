@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-// import { Property } from './property.entity';
+import { Property } from '../../properties/entities/property.entity';
 
 @Entity()
 export class Organization {
@@ -22,6 +22,6 @@ export class Organization {
   })
   updatedAt: Date; // Timestamp for when the organization was last updated
 
-  //   @OneToMany(() => Property, (property) => property.organization)
-  //   properties: Property[]; // One organization can have multiple properties
+  @OneToMany(() => Property, (property) => property.organization)
+  properties: Property[]; // One organization can have multiple properties
 }
