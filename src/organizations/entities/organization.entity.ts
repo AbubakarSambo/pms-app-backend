@@ -1,27 +1,31 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Property } from '../../properties/entities/property.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class Organization {
   @PrimaryGeneratedColumn('uuid')
-  id: string; // Unique identifier for the organization
+  id: string;
 
   @Column()
-  name: string; // Name of the organization
+  name: string;
 
   @Column({ type: 'text', nullable: true })
-  contactInfo?: string; // Optional contact information
+  contactInfo?: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date; // Timestamp for when the organization was created
+  createdAt: Date;
 
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
-  updatedAt: Date; // Timestamp for when the organization was last updated
+  updatedAt: Date;
 
   @OneToMany(() => Property, (property) => property.organization)
   properties: Property[]; // One organization can have multiple properties
+
+  @OneToMany(() => User, (user) => user.organization)
+  users: User[]; // One organization can have multiple properties
 }

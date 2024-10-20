@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Organization } from '../../organizations/entities/organization.entity';
+import { UserRoles } from 'src/user-roles/entities/user-role.entity';
 
 @Entity()
 export class Property {
@@ -24,4 +31,7 @@ export class Property {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date; // Timestamp for when the property was last updated
+
+  @OneToMany(() => UserRoles, (userRole) => userRole.property)
+  userRoles: UserRoles[];
 }

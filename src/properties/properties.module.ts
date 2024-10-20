@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization } from 'src/organizations/entities/organization.entity';
 import { Property } from './entities/property.entity';
 import { SharedModule } from 'src/shared/shared.module';
+import { OrganizationsService } from 'src/organizations/organizations.service';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { SharedModule } from 'src/shared/shared.module';
     TypeOrmModule.forFeature([Organization, Property]), // Include the organization repository
   ],
   controllers: [PropertiesController],
-  providers: [PropertiesService],
+  providers: [PropertiesService, OrganizationsService],
 })
 export class PropertiesModule {}

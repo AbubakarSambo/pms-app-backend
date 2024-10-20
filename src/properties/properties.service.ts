@@ -4,15 +4,28 @@ import { UpdatePropertyDto } from './dto/update-property.dto';
 import { Property } from './entities/property.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Organization } from 'src/organizations/entities/organization.entity';
+import { OrganizationsService } from 'src/organizations/organizations.service';
 
 @Injectable()
 export class PropertiesService {
   constructor(
     @InjectRepository(Property)
     private readonly propertyRepository: Repository<Property>,
+    private organizationsService: OrganizationsService,
   ) {}
-  create(createPropertyDto: CreatePropertyDto) {
-    return this.propertyRepository.save(createPropertyDto);
+  async create(createPropertyDto: CreatePropertyDto) {
+    const organization = await this.organizationsService.findOne(
+      createPropertyDto.organizationId,
+    );
+
+    const newProperty = this.propertyRepository.create({
+      name: createPropertyDto.name,
+      address: createPropertyDto.address,
+      organization,
+    });
+
+    return this.propertyRepository.save(newProperty);
   }
 
   findAll(skip = 0, take = 20): Promise<[Property[], number]> {
@@ -20,7 +33,10 @@ export class PropertiesService {
   }
 
   async findOne(id: string) {
-    const org = await this.propertyRepository.findOne({ where: { id } });
+    const org = await this.propertyRepository.findOne({
+      where: { id },
+      relations: ['organization'],
+    });
     if (!org) {
       throw new NotFoundException('Could not find property');
     }

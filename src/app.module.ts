@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PropertiesModule } from './properties/properties.module';
+import { UsersModule } from './users/users.module';
+import { UserRolesModule } from './user-roles/user-roles.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { PropertiesModule } from './properties/properties.module';
     }),
     OrganizationsModule,
     PropertiesModule,
+    UsersModule,
+    UserRolesModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
