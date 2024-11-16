@@ -10,6 +10,9 @@ import { IsOrganizationIdValid } from 'src/shared/validators/validOrganizationVa
 
 export class CreateUserDto {
   @IsNotEmpty()
+  id: string;
+
+  @IsNotEmpty()
   @IsString()
   @MinLength(2)
   firstName: string;
@@ -34,5 +37,5 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsUUID() // Ensures the organizationId is a valid UUID
   @IsOrganizationIdValid({ message: 'Organization ID is invalid' })
-  organizationId: string;
+  organizationId?: string;
 }

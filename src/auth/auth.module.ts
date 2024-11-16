@@ -3,6 +3,13 @@ import { SupertokensService } from './supertokens/supertokens.service';
 import { MiddlewareConsumer, NestModule, DynamicModule } from '@nestjs/common';
 import { AuthMiddleware } from './auth.middleware';
 import { ConfigInjectionToken, AuthModuleConfig } from './config.interface';
+import { UsersModule } from 'src/users/users.module';
+import { UsersService } from 'src/users/users.service';
+import { OrganizationsModule } from 'src/organizations/organizations.module';
+import { OrganizationsService } from 'src/organizations/organizations.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Organization } from 'src/organizations/entities/organization.entity';
 
 @Module({
   providers: [],
@@ -30,9 +37,11 @@ export class AuthModule implements NestModule {
           provide: ConfigInjectionToken,
         },
         SupertokensService,
+        UsersService,
+        OrganizationsService,
       ],
       exports: [],
-      imports: [],
+      imports: [TypeOrmModule.forFeature([User, Organization])],
       module: AuthModule,
     };
   }

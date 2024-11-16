@@ -5,10 +5,14 @@ import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import Dashboard from 'supertokens-node/recipe/dashboard';
 
 import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class SupertokensService {
-  constructor(@Inject(ConfigInjectionToken) private config: AuthModuleConfig) {
+  constructor(
+    @Inject(ConfigInjectionToken) private config: AuthModuleConfig,
+    private usersService: UsersService,
+  ) {
     supertokens.init({
       appInfo: config.appInfo,
       supertokens: {
@@ -17,36 +21,63 @@ export class SupertokensService {
       },
       recipeList: [
         EmailPassword.init({
+          signUpFeature: {
+            formFields: [
+              {
+                id: 'firstName',
+              },
+              {
+                id: 'lastName',
+              },
+              {
+                id: 'phone',
+              },
+              ,
+              {
+                id: 'email',
+              },
+              ,
+              {
+                id: 'password',
+              },
+            ],
+          },
           override: {
-            functions: (originalImplementation) => {
+            apis: (originalImplementation) => {
               return {
                 ...originalImplementation,
-                signUp: async function (input) {
-                  // First we call the original implementation of signUp.
-                  let response = await originalImplementation.signUp(input);
+                signUpPOST: async function (input) {
+                  const fields = input.formFields.reduce((acc, field) => {
+                    acc[field.id] = field.value;
+                    return acc;
+                  }, {});
+                  const { firstName, lastName, email, password, phone } =
+                    fields as {
+                      firstName: string;
+                      lastName: string;
+                      email: string;
+                      phone: string;
+                      password: string;
+                    };
+                  // const { firstName, lastName, email, phone } =
+                  //   input.formFields;
+                  if (originalImplementation.signUpPOST === undefined) {
+                    throw Error('Should never come here');
+                  }
 
-                  console.log({ response, input });
+                  // First we call the original implementation of signUpPOST.
+                  let response = await originalImplementation.signUpPOST(input);
+
                   // Post sign up response, we check if it was successful
-                  if (
-                    response.status === 'OK' &&
-                    response.user.loginMethods.length === 1 &&
-                    input.session === undefined
-                  ) {
-                    console.log({ input });
-                    /**
-                     *
-                     * response.user contains the following info:
-                     * - emails
-                     * - id
-                     * - timeJoined
-                     * - tenantIds
-                     * - phone numbers
-                     * - third party login info
-                     * - all the login methods associated with this user.
-                     * - information about if the user's email is verified or not.
-                     *
-                     */
-                    // TODO: post sign up logic
+                  if (response.status === 'OK') {
+                    await usersService.create({
+                      id: response.user.id,
+                      firstName,
+                      lastName,
+                      email,
+                      phone,
+                      password,
+                    });
                   }
                   return response;
                 },
@@ -54,7 +85,7 @@ export class SupertokensService {
             },
           },
         }),
-        Session.init(),
+        Session.init({}),
         Dashboard.init(),
       ],
     });
