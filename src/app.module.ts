@@ -22,7 +22,9 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      ssl: false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
       extra: {
         trustServerCertificate: true,
         Encrypt: true,
