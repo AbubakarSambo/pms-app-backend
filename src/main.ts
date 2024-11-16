@@ -8,7 +8,7 @@ import { SupertokensExceptionFilter } from './auth/auth.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: [process.env.ORIGIN],
+    origin: ['https://pms-app-frontend-5e0feb227e5f.herokuapp.com'],
     allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
     credentials: true,
   });
