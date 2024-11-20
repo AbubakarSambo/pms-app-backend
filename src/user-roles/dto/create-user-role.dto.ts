@@ -5,7 +5,7 @@ export class CreateUserRoleDto {
   userId: string;
 
   @IsUUID()
-  propertyId: string;
+  propertyId?: string;
 
   @IsUUID()
   roleId: string;
