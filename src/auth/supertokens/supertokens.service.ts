@@ -8,6 +8,7 @@ import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
 import { UsersService } from 'src/users/users.service';
 import { DataSource } from 'typeorm';
 import { RolesService } from 'src/roles/roles.service';
+import { UserRolesService } from 'src/user-roles/user-roles.service';
 
 @Injectable()
 export class SupertokensService {
@@ -15,6 +16,7 @@ export class SupertokensService {
     @Inject(ConfigInjectionToken) private config: AuthModuleConfig,
     private usersService: UsersService,
     private rolesService: RolesService,
+    private userRolesService: UserRolesService,
     private dataSource: DataSource,
   ) {
     supertokens.init({
@@ -125,7 +127,39 @@ export class SupertokensService {
             },
           },
         }),
-        Session.init({}),
+        Session.init({
+          override: {
+            functions: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                createNewSession: async function (input) {
+                  let userId = input.userId;
+                  const userRoles = (
+                    await userRolesService.findByUserId(userId)
+                  ).map((userRole) => {
+                    return {
+                      name: userRole.role.name,
+                      property: {
+                        id: userRole.property?.id,
+                        name: userRole.property?.name,
+                      },
+                    };
+                  });
+                  const isSuperAdmin = !!userRoles.find(
+                    (role) => role.name === 'Super Admin',
+                  );
+                  input.accessTokenPayload = {
+                    ...input.accessTokenPayload,
+                    userRoles,
+                    isSuperAdmin,
+                  };
+
+                  return originalImplementation.createNewSession(input);
+                },
+              };
+            },
+          },
+        }),
         Dashboard.init(),
       ],
     });

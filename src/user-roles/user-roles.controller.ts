@@ -30,6 +30,11 @@ export class UserRolesController {
     return this.userRolesService.findOne(id);
   }
 
+  @Get(':userId')
+  findByUserId(@Param('userId') userId: string) {
+    return this.userRolesService.findOne(userId);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

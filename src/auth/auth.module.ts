@@ -10,6 +10,10 @@ import { User } from 'src/users/entities/user.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
 import { RolesService } from 'src/roles/roles.service';
 import { Role } from 'src/roles/entities/role.entity';
+import { UserRolesService } from 'src/user-roles/user-roles.service';
+import { UserRoles } from 'src/user-roles/entities/user-role.entity';
+import { PropertiesService } from 'src/properties/properties.service';
+import { Property } from 'src/properties/entities/property.entity';
 
 @Module({
   providers: [],
@@ -40,9 +44,19 @@ export class AuthModule implements NestModule {
         UsersService,
         OrganizationsService,
         RolesService,
+        UserRolesService,
+        PropertiesService,
       ],
       exports: [],
-      imports: [TypeOrmModule.forFeature([User, Organization, Role])],
+      imports: [
+        TypeOrmModule.forFeature([
+          User,
+          Organization,
+          Role,
+          UserRoles,
+          Property,
+        ]),
+      ],
       module: AuthModule,
     };
   }
