@@ -114,6 +114,7 @@ export class SupertokensService {
 
                       return response;
                     } catch (err) {
+                      console.log({ err });
                       // since we have errors lets rollback the changes we made
                       await queryRunner.rollbackTransaction();
                     }
@@ -148,17 +149,16 @@ export class SupertokensService {
                       try {
                         await queryRunner.startTransaction();
 
-                        const userRole = await queryRunner.manager.save(
-                          'UserRoles',
-                          {
-                            user, // Pass the previously committed user object here
-                            role: superAdminRole,
-                          },
-                        );
+                        await queryRunner.manager.save('UserRoles', {
+                          user, // Pass the previously committed user object here
+                          role: superAdminRole,
+                        });
 
                         // Commit the transaction after successfully saving the user role
                         await queryRunner.commitTransaction();
                       } catch (error) {
+                        console.log({ error });
+
                         await queryRunner.rollbackTransaction();
                         throw error;
                       } finally {
