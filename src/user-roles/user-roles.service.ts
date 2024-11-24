@@ -52,11 +52,11 @@ export class UserRolesService {
   async findByUserId(userId: string) {
     const user = await this.usersService.findOne(userId);
     const userRoles = await this.userRolesRepository.find({
-      where: { user: { id: user.id } },
+      where: { user: { id: user?.id } },
       relations: ['role', 'property'],
     });
     if (!userRoles) {
-      throw new NotFoundException('Could not find userRoles');
+      return [];
     }
 
     return userRoles;

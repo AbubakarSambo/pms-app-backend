@@ -88,39 +88,83 @@ export class SupertokensService {
                   if (originalImplementation.signUpPOST === undefined) {
                     throw Error('Should never come here');
                   }
-
-                  try {
-                    let response =
-                      await originalImplementation.signUpPOST(input);
-
-                    if (response.status === 'OK') {
-                      const user = await queryRunner.manager.save('User', {
+                  let response = await originalImplementation.signUpPOST(input);
+                  let user;
+                  if (response.status === 'OK') {
+                    try {
+                      const org = await queryRunner.manager.save(
+                        'Organization',
+                        {
+                          name: organization,
+                        },
+                      );
+                      user = await queryRunner.manager.save('User', {
                         id: response.user.id,
                         firstName,
                         lastName,
                         email,
                         phone,
                         password,
-                      });
-                      await queryRunner.manager.save('Organization', {
-                        name: organization,
+                        organization: org,
                       });
 
-                      await queryRunner.manager.save('UserRoles', {
-                        user,
-                        role: superAdminRole,
-                      });
+                      await queryRunner.commitTransaction();
+                      await createRole(user);
+                      await initSession();
+
+                      return response;
+                    } catch (err) {
+                      // since we have errors lets rollback the changes we made
+                      await queryRunner.rollbackTransaction();
                     }
 
-                    await queryRunner.commitTransaction();
+                    async function initSession() {
+                      const userRoles = (
+                        await userRolesService.findByUserId(user.id)
+                      ).map((userRole) => {
+                        return {
+                          name: userRole.role.name,
+                          property: {
+                            id: userRole.property?.id,
+                            name: userRole.property?.name,
+                          },
+                        };
+                      });
+                      const isSuperAdmin = !!userRoles.find(
+                        (role) => role.name === 'Super Admin',
+                      );
+                      await Session.createNewSession(
+                        input.options.req,
+                        input.options.res,
+                        'public',
+                        supertokens.convertToRecipeUserId(user.id),
+                        {
+                          roles: userRoles,
+                          isSuperAdmin,
+                        },
+                      );
+                    }
+                    async function createRole(user: any) {
+                      try {
+                        await queryRunner.startTransaction();
 
-                    return response;
-                  } catch (err) {
-                    // since we have errors lets rollback the changes we made
-                    await queryRunner.rollbackTransaction();
-                  } finally {
-                    // you need to release a queryRunner which was manually instantiated
-                    await queryRunner.release();
+                        const userRole = await queryRunner.manager.save(
+                          'UserRoles',
+                          {
+                            user, // Pass the previously committed user object here
+                            role: superAdminRole,
+                          },
+                        );
+
+                        // Commit the transaction after successfully saving the user role
+                        await queryRunner.commitTransaction();
+                      } catch (error) {
+                        await queryRunner.rollbackTransaction();
+                        throw error;
+                      } finally {
+                        await queryRunner.release();
+                      }
+                    }
                   }
                 },
               };
@@ -133,28 +177,31 @@ export class SupertokensService {
               return {
                 ...originalImplementation,
                 createNewSession: async function (input) {
-                  let userId = input.userId;
-                  const userRoles = (
-                    await userRolesService.findByUserId(userId)
-                  ).map((userRole) => {
-                    return {
-                      name: userRole.role.name,
-                      property: {
-                        id: userRole.property?.id,
-                        name: userRole.property?.name,
-                      },
+                  try {
+                    let userId = input.userId;
+                    const userRoles = (
+                      await userRolesService.findByUserId(userId)
+                    ).map((userRole) => {
+                      return {
+                        name: userRole.role.name,
+                        property: {
+                          id: userRole.property?.id,
+                          name: userRole.property?.name,
+                        },
+                      };
+                    });
+                    const isSuperAdmin = !!userRoles.find(
+                      (role) => role.name === 'Super Admin',
+                    );
+                    input.accessTokenPayload = {
+                      ...input.accessTokenPayload,
+                      userRoles,
+                      isSuperAdmin,
                     };
-                  });
-                  const isSuperAdmin = !!userRoles.find(
-                    (role) => role.name === 'Super Admin',
-                  );
-                  input.accessTokenPayload = {
-                    ...input.accessTokenPayload,
-                    userRoles,
-                    isSuperAdmin,
-                  };
-
-                  return originalImplementation.createNewSession(input);
+                    return originalImplementation.createNewSession(input);
+                  } catch (err) {
+                    console.log('err', err);
+                  }
                 },
               };
             },

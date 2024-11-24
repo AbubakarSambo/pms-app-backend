@@ -43,11 +43,11 @@ export class UsersService {
       where: { id },
       relations: ['organization'],
     });
-    if (!user) {
-      throw new NotFoundException('Could not find user');
-    }
+    // if (!user) {
+    //   throw new NotFoundException('Could not find user');
+    // }
 
-    return user;
+    return user || null;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
