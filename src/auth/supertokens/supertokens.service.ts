@@ -124,7 +124,7 @@ export class SupertokensService {
                         await userRolesService.findByUserId(user.id)
                       ).map((userRole) => {
                         return {
-                          name: userRole.role.name,
+                          name: userRole.role?.name ?? '',
                           property: {
                             id: userRole.property?.id,
                             name: userRole.property?.name,
