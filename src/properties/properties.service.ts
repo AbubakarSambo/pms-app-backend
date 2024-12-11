@@ -33,15 +33,15 @@ export class PropertiesService {
   }
 
   async findOne(id: string) {
-    const org = await this.propertyRepository.findOne({
+    const property = await this.propertyRepository.findOne({
       where: { id },
       relations: ['organization'],
     });
-    if (!org) {
+    if (!property) {
       throw new NotFoundException('Could not find property');
     }
 
-    return org;
+    return property;
   }
 
   async update(id: string, updateOrganizationDto: UpdatePropertyDto) {

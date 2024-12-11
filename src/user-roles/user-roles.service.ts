@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +18,7 @@ export class UserRolesService {
   constructor(
     @InjectRepository(UserRoles)
     private readonly userRolesRepository: Repository<UserRoles>,
+    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
     private propertiesService: PropertiesService,
     private rolesService: RolesService,
@@ -25,6 +31,7 @@ export class UserRolesService {
     );
     const role = await this.rolesService.findOne(createUserRoleDto.roleId);
 
+    console.log({ user, role, property });
     const newUserRole = this.userRolesRepository.create({
       user,
       property,

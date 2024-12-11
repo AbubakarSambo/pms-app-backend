@@ -21,6 +21,7 @@ export class AuthGuard implements CanActivate {
     // In this case, req.session will be undefined if the session doesn't exist.
     const session = await getSession(req, resp, this.getSessionOptions);
     req.session = session;
+    req.userId = session.getUserId();
     return true;
   }
 }

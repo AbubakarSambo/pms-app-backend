@@ -14,5 +14,6 @@ import { OrganizationsService } from 'src/organizations/organizations.service';
   ],
   controllers: [PropertiesController],
   providers: [PropertiesService, OrganizationsService],
+  exports: [PropertiesService],
 })
 export class PropertiesModule {}

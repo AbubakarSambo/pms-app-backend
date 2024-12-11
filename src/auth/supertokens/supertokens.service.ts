@@ -114,7 +114,6 @@ export class SupertokensService {
 
                       return response;
                     } catch (err) {
-                      console.log({ err });
                       // since we have errors lets rollback the changes we made
                       await queryRunner.rollbackTransaction();
                     }
@@ -134,6 +133,8 @@ export class SupertokensService {
                       const isSuperAdmin = !!userRoles.find(
                         (role) => role.name === 'Super Admin',
                       );
+                      // const orgId = (await usersService.findOne(user.id))
+                      //   ?.organization?.id;
                       await Session.createNewSession(
                         input.options.req,
                         input.options.res,
@@ -142,6 +143,7 @@ export class SupertokensService {
                         {
                           roles: userRoles,
                           isSuperAdmin,
+                          orgId: '',
                         },
                       );
                     }
@@ -157,14 +159,14 @@ export class SupertokensService {
                         // Commit the transaction after successfully saving the user role
                         await queryRunner.commitTransaction();
                       } catch (error) {
-                        console.log({ error });
-
                         await queryRunner.rollbackTransaction();
                         throw error;
                       } finally {
                         await queryRunner.release();
                       }
                     }
+                  } else {
+                    throw Error(response.status);
                   }
                 },
               };
@@ -193,10 +195,13 @@ export class SupertokensService {
                     const isSuperAdmin = !!userRoles.find(
                       (role) => role.name === 'Super Admin',
                     );
+                    const user = await usersService.findOne(userId);
+                    const orgId = user?.organization?.id;
                     input.accessTokenPayload = {
                       ...input.accessTokenPayload,
                       userRoles,
                       isSuperAdmin,
+                      orgId,
                     };
                     return originalImplementation.createNewSession(input);
                   } catch (err) {

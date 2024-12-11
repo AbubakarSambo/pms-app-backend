@@ -39,3 +39,33 @@ export class CreateUserDto {
   @IsOrganizationIdValid({ message: 'Organization ID is invalid' })
   organizationId?: string;
 }
+
+export class AdminCreateUserDto {
+  id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(2)
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(2)
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  roleId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  propertyId: string;
+}

@@ -7,15 +7,31 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { AdminCreateUserDto, CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { getSession } from 'supertokens-node/recipe/session';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post('/admin')
+  @UseGuards(new AuthGuard())
+  async adminCreate(
+    @Req() req: Request,
+    @Body() createUserDto: AdminCreateUserDto,
+  ) {
+    const userId = req['userId'];
+    const adminOrg = (await this.usersService.findOne(userId)).organization;
+    return this.usersService.adminCreate(createUserDto, adminOrg);
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
