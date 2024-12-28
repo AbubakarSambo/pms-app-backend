@@ -8,10 +8,7 @@ import { SharedModule } from 'src/shared/shared.module';
 import { OrganizationsService } from 'src/organizations/organizations.service';
 
 @Module({
-  imports: [
-    SharedModule,
-    TypeOrmModule.forFeature([Organization, Property]), // Include the organization repository
-  ],
+  imports: [SharedModule, TypeOrmModule.forFeature([Organization, Property])],
   controllers: [PropertiesController],
   providers: [PropertiesService, OrganizationsService],
   exports: [PropertiesService],

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Organization } from '../../organizations/entities/organization.entity';
 import { UserRoles } from 'src/user-roles/entities/user-role.entity';
+import { Room } from 'src/rooms/entities/room.entity';
 
 @Entity()
 export class Property {
@@ -24,6 +25,9 @@ export class Property {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date; // Timestamp for when the property was created
+
+  @OneToMany(() => Room, (room) => room.id)
+  rooms: Room[]; // One property can have multiple rooms
 
   @Column({
     type: 'timestamp',

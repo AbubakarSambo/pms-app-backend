@@ -1,4 +1,4 @@
-import { IsUUID, IsString, IsNotEmpty } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateRoleDto {
   @IsString()

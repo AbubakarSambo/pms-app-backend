@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { UserRolesModule } from './user-roles/user-roles.module';
 import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { AuthModule } from './auth/auth.module';
         websiteBasePath: process.env.WEBSITE_BASE_PATH,
       },
     }),
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
