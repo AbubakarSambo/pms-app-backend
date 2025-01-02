@@ -37,20 +37,6 @@ export class RoomsController {
     return { data: response, total };
   }
 
-  // @Get('/:propertyId')
-  // async findAllByProperty(
-  //   @Query('skip') skip: number,
-  //   @Query('take') take: number,
-  //   @Query('propertyId') propertyId: string,
-  // ): Promise<{ data: Room[]; total: number }> {
-  //   const [response, total] = await this.roomsService.findAlByPropertyId(
-  //     (skip = 0),
-  //     (take = 20),
-  //     propertyId,
-  //   );
-  //   return { data: response, total };
-  // }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(id);

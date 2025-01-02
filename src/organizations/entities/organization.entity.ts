@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Property } from '../../properties/entities/property.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Guest } from 'src/guests/entities/guest.entity';
 
 @Entity()
 export class Organization {
@@ -25,6 +26,9 @@ export class Organization {
 
   @OneToMany(() => Property, (property) => property.organization)
   properties: Property[]; // One organization can have multiple properties
+
+  @OneToMany(() => Guest, (guest) => guest.organization)
+  guests: Guest[]; // One organization can have multiple properties
 
   @OneToMany(() => User, (user) => user.organization)
   users: User[]; // One organization can have multiple properties
