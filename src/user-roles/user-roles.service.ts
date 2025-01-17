@@ -31,7 +31,6 @@ export class UserRolesService {
     );
     const role = await this.rolesService.findOne(createUserRoleDto.roleId);
 
-    console.log({ user, role, property });
     const newUserRole = this.userRolesRepository.create({
       user,
       property,
