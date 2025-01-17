@@ -20,7 +20,7 @@ export class RoomsService {
     const newRoom = this.roomRespository.create({
       name: createRoomDto.name,
       property,
-      status: RoomStatus.OPEN,
+      status: RoomStatus.READY,
       description: createRoomDto.description,
       pricePerNight: createRoomDto.pricePerNight,
       capacity: createRoomDto.capacity,

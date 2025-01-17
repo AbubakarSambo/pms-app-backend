@@ -11,6 +11,7 @@ import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { GuestsModule } from './guests/guests.module';
+import { ReservationsModule } from './reservations/reservations.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { GuestsModule } from './guests/guests.module';
     }),
     RoomsModule,
     GuestsModule,
+    ReservationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

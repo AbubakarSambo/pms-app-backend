@@ -1,4 +1,5 @@
 import { Property } from 'src/properties/entities/property.entity';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
 import {
   Column,
   Entity,
@@ -8,11 +9,10 @@ import {
 } from 'typeorm';
 
 export enum RoomStatus {
-  RESERVED = 'reserved',
-  BOOKED = 'booked',
-  CHECKED_IN = 'checkedIn',
-  OPEN = 'open',
-  CANCELLED = 'cancelled',
+  READY = 'ready',
+  OCCUPIED = 'occupoed',
+  DIRTY = 'dirty',
+  OUTOFSERVICE = 'outOfService',
 }
 
 @Entity()
@@ -26,7 +26,7 @@ export class Room {
   @Column({
     type: 'enum',
     enum: RoomStatus,
-    default: RoomStatus.OPEN,
+    default: RoomStatus.READY,
   })
   status: RoomStatus;
 
@@ -44,6 +44,9 @@ export class Room {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @OneToMany(() => Reservation, (reservation) => reservation.room)
+  reservations: Reservation[];
 
   @Column({
     type: 'timestamp',

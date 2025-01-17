@@ -1,5 +1,5 @@
 import { Organization } from 'src/organizations/entities/organization.entity';
-import { Property } from 'src/properties/entities/property.entity';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
 import {
   Column,
   Entity,
@@ -7,14 +7,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-export enum RoomStatus {
-  RESERVED = 'reserved',
-  BOOKED = 'booked',
-  CHECKED_IN = 'checkedIn',
-  OPEN = 'open',
-  CANCELLED = 'cancelled',
-}
 
 @Entity()
 export class Guest {
@@ -43,6 +35,9 @@ export class Guest {
   })
   updatedAt: Date;
 
+  @OneToMany(() => Reservation, (reservation) => reservation.guest)
+  reservations: Reservation[];
+
   @ManyToOne(() => Organization, (organization) => organization.properties)
-  organization: Organization; // Link to the organization that owns the property
+  organization: Organization;
 }

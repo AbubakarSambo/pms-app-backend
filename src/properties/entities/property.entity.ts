@@ -8,6 +8,7 @@ import {
 import { Organization } from '../../organizations/entities/organization.entity';
 import { UserRoles } from 'src/user-roles/entities/user-role.entity';
 import { Room } from 'src/rooms/entities/room.entity';
+import { Reservation } from 'src/reservations/entities/reservation.entity';
 
 @Entity()
 export class Property {
@@ -38,4 +39,7 @@ export class Property {
 
   @OneToMany(() => UserRoles, (userRole) => userRole.property)
   userRoles: UserRoles[];
+
+  @OneToMany(() => Reservation, (reservation) => reservation.guest)
+  reservations: Reservation[];
 }
