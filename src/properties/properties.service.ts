@@ -28,8 +28,12 @@ export class PropertiesService {
     return this.propertyRepository.save(newProperty);
   }
 
-  findAll(skip = 0, take = 20): Promise<[Property[], number]> {
-    return this.propertyRepository.findAndCount({ skip, take });
+  findAll(skip = 0, take = 20, orgId): Promise<[Property[], number]> {
+    return this.propertyRepository.findAndCount({
+      where: { organization: { id: orgId } },
+      skip,
+      take,
+    });
   }
 
   async findOne(id: string) {

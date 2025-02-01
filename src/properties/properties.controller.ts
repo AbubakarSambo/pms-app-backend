@@ -29,10 +29,12 @@ export class PropertiesController {
   async findAll(
     @Query('skip') skip: number,
     @Query('take') take: number,
+    @Query('orgId') orgId: string,
   ): Promise<{ data: Property[]; total: number }> {
     const [response, total] = await this.propertiesService.findAll(
       (skip = 0),
       (take = 20),
+      orgId,
     );
     return { data: response, total };
   }
